@@ -1,0 +1,44 @@
+     
+            <script>
+            function populate(s1,s2){
+                var s1 = document.getElementById(s1);
+                var s2 = document.getElementById(s2);
+                s2.innerHTML = "";
+                if(s1.value == "GP"){
+                    var optionArray = ["|","1o1|101","1o2|102","1o3|103","1o4|104","1o5|105","1o6|106","2o1|201","2o2|202","2o3|203","2o4|204","2o5|205","2o6|206","2o7|207","3o1|301","3o2|302","3o3|303","3o4|304","3o5|305","3o6|306","3o7|307","3o8|308","3o9|309","4o1|401","4o2|402","4o3|403","4o4|404","4o5|405","4o6|406","4o7|407","4o8|408","4o9|409","5o1|501","5o2|502","5o3|503","5o4|504","5o5|505","5o6|506","5o7|507","5o8|508","5o9|509"];
+                } else if(s1.value == "LV"){
+                    var optionArray = ["|","1oone|101","1otwo|102","1othree|103","1ofour|104","2oone|201","2otwo|202","2othree|203","2ofour|204","3oone|301","3otwo|302","3othree|303","3ofour|304","4oone|401","4otwo|402","4othree|403","4ofour|404","5oone|501","5otwo|502","5othree|503","5ofour|504","6oone|601","6otwo|602","6othree|603","6ofour|604","7oone|701","7otwo|702","7othree|703","7ofour|704","8oone|801","8otwo|802","8othree|803","8ofour|804","9oone|901","9otwo|902","9othree|903","9ofour|904","10oone|1001","10otwo|1002","10othree|1003","10ofour|1004","11oone|1101","11otwo|1102","11othree|1103","11ofour|1104","12oone|1201","12otwo|1202","12othree|1203","12ofour|1204","13oone|1301","13otwo|1302","13othree|1303","13ofour|1304","14oone|1401","14otwo|1402","14othree|1403","14ofour|1404"];
+                }
+                for(var option in optionArray){
+                    var pair = optionArray[option].split("|");
+                    var newOption = document.createElement("option");
+                    newOption.value = pair[0];
+                    newOption.innerHTML = pair[1];
+                    s2.options.add(newOption);
+                }
+
+             }
+            </script>
+           <form action="" method="post">
+            Choose Car Make:
+            <select id="slct1" name="slct1" onchange="populate(this.id,'slct2')">
+              <option value=""></option>
+              <option value="GP">GP</option>
+              <option value="LV">LV</option>
+              <!-- <option value="BMW">BMW</option>
+              <option value="Buick">Buick</option>
+              <option value="Cadillac">Cadillac</option>
+              <option value="Chevrolet">Chevrolet</option>
+              <option value="Chrysler">Chrysler</option> -->
+            </select>
+           <hr>
+            Choose Car Model:
+            <select id="slct2" name="slct2" onchange="alert(buildUrl(url,parameters))">
+              
+            </select>
+
+            <hr />
+            <button type="submit">shit</button>
+          </form>
+
+          <?php  print_r($4otwo) ?>

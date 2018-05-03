@@ -1,0 +1,271 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Any Title</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<script type="text/javascript">
+
+/*   Copyright 2007, Michael J. Hill.  Used with permission.  www.javascript-demos.com */
+/*   Free use of the code, so long as BOTH copyright notices are kept intact */
+
+// Customizations
+	var defaultMonth = 0;  // 1 displays next month onload, -6 displays six months ago
+	var hopMonths = 6; // number of months to "jump" for Fast Forward and Rewind buttons
+	var hopYears = 5;  // number of years to "jump"
+	var hiLiteToday = true;  // if and when current month is displayed
+	var floatTo = "right";  // right or left
+	var clickField = [];//Do not delete this line, the following lines are optional and you may have up to 7 fields
+	clickField[0] = "contractDate,Order Received"; // fieldName,Description
+	clickField[1] = "startAssembly,Started Assembly";
+	clickField[2] = "endAssembly,Finished Assembly";
+	clickField[3] = "dateShipped,Order Shipped";
+// End Customizations
+
+// Do not edit below this line
+
+	var IE = false;
+	if (navigator.appName == "Microsoft Internet Explorer"){IE = true}
+	var monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+	var refDate = "";
+	var today = "";
+	var usedToday = "";
+	var prevField = "";
+	var leftStr = "";
+	if (floatTo == "right"){leftStr = (screen.width)-235+"px"}
+	if (floatTo == "left"){leftStr = "0px"}
+	if (clickField.length > 0){for (t = 0; t < clickField.length; t++)
+		{clickField[t] = clickField[t].split(",")}}
+
+	function stayHome(){	
+
+		var nV = 0;
+		if(!document.body.scrollTop){nV = document.documentElement.scrollTop}
+		else {nV = document.body.scrollTop}
+		document.getElementById('nCalendar').style.top = nV+'px';
+		setTimeout("stayHome()",50);
+	}
+
+	function rewindM(){
+
+		refDate = new Date(refDate.getFullYear(),refDate.getMonth()-hopMonths,1)
+		createCalendar();
+	}
+
+	function forwardM(){
+
+		refDate = new Date(refDate.getFullYear(),refDate.getMonth()+hopMonths,1)
+		createCalendar();
+	}
+
+	function rewindY(){
+
+		refDate = new Date(refDate.getFullYear()-hopYears,refDate.getMonth(),1)
+		createCalendar();
+	}
+
+	function forwardY(){
+
+		refDate = new Date(refDate.getFullYear()+hopYears,refDate.getMonth(),1)
+		createCalendar();
+	}
+	
+	function prevM(){
+
+		refDate = new Date(refDate.getFullYear(),refDate.getMonth()-1,1)
+		createCalendar();
+	}
+	
+	function nextM(){
+
+		refDate = new Date(refDate.getFullYear(),refDate.getMonth()+1,1)
+		createCalendar();
+	}
+
+	function prevY(){
+
+		refDate = new Date(refDate.getFullYear()-1,refDate.getMonth(),1)
+		createCalendar();
+	}
+
+	function nextY(){
+
+		refDate = new Date(refDate.getFullYear()+1,refDate.getMonth(),1)
+		createCalendar();
+	}
+
+	function fillField(n){
+
+		if (usedToday != "" && refDate.getMonth() == today.getMonth() && refDate.getFullYear() == today.getFullYear()){usedToday.style.backgroundColor = "#ffff00"}
+		if (prevField != "" && prevField != usedToday){prevField.style.backgroundColor = "#ffffe0"}
+		var fillDate = refDate.getMonth()+1+"/"+n.lastChild.data+"/"+refDate.getFullYear();
+		fillDate = fillDate.replace(/^(\d{1}\/)/,"0$1").replace(/(\d{2}\/)(\d{1}\/)/,"$10$2")
+		for (i = 1; i < clickField.length+1; i++)
+			{
+			 if (document.getElementById('fieldBox'+i).checked)
+				{
+				 document.forms[0][clickField[i-1][0]].value = fillDate;
+				 document.getElementById('fieldBox'+i).checked = false;
+				 if (n.style.backgroundColor == '#ffff00'){usedToday = n}
+				 if (n.style.backgroundColor == 'rgb(255, 255, 0)'){usedToday = n}
+				 n.style.backgroundColor = "#90ee90";
+				 prevField = n;
+				}
+			}
+	}
+
+	function createCalendar(){
+
+		document.getElementById('header').lastChild.data = monthNames[refDate.getMonth()]+" "+refDate.getFullYear();
+		var currEOM = new Date(refDate.getFullYear(),refDate.getMonth()+1,refDate.getDate()-refDate.getDate()).getDate();
+		var pageMap = document.getElementById('monthPage');
+		for (i=2; i<8; i++)
+			{
+			 for (n=0; n<7; n++)
+				{
+				 if (IE){pageMap.rows[i].cells[n].lastChild.data = " "}
+				 else {pageMap.rows[i].cells[n].lastChild.data = "-"}
+				 pageMap.rows[i].cells[n].style.backgroundColor = "#ffffe0";
+				 pageMap.rows[i].cells[n].style.cursor = "auto";
+				 }
+			}
+		var counter = 0;
+		var startDay = new Date(refDate.getFullYear(),refDate.getMonth(),1).getDay();
+		for (i=2; i<8; i++)
+			{
+			 for (n=0; n<7; n++)
+				{
+				 if (i == 2 && n >= startDay)
+				 	{
+					 counter++;
+					 pageMap.rows[i].cells[n].lastChild.data = counter;
+					 pageMap.rows[i].cells[n].onclick = function(){fillField(this)}
+					 pageMap.rows[i].cells[n].style.cursor = "pointer";
+					}
+				 if (i > 2 && i < 6) 
+					{
+					 counter++;
+					 pageMap.rows[i].cells[n].lastChild.data = counter;
+					 pageMap.rows[i].cells[n].onclick = function(){fillField(this)}
+					 pageMap.rows[i].cells[n].style.cursor = "pointer";
+					}
+				 if (i == 6 && counter < currEOM)
+					{
+					 counter++;
+					 pageMap.rows[i].cells[n].lastChild.data = counter;
+					 pageMap.rows[i].cells[n].onclick = function(){fillField(this)}
+					 pageMap.rows[i].cells[n].style.cursor = "pointer";
+					}
+				 if (i == 7 && counter < currEOM)
+					{
+					 document.getElementById('lastRow').style.display = "";
+					 counter++;
+					 pageMap.rows[i].cells[n].lastChild.data = counter;
+					 pageMap.rows[i].cells[n].onclick = function(){fillField(this)}
+					 pageMap.rows[i].cells[n].style.cursor = "pointer";
+					}
+				 if (IE && i == 7)
+					{
+					 if (pageMap.rows[i].cells[0].lastChild.data == " ")
+						{document.getElementById('lastRow').style.display = "none"}
+					 }
+				 if (!IE && i == 7)
+					{
+					 if (pageMap.rows[i].cells[0].lastChild.data == "-")
+						{document.getElementById('lastRow').style.display = "none"}
+					 }
+				}
+			}
+		if (today.getFullYear() == refDate.getFullYear() && today.getMonth() == refDate.getMonth() && hiLiteToday)
+			{
+			 for (i=2; i<8; i++)
+				{
+			 	 for (n=0; n<7; n++)
+					{
+					 var tmp = pageMap.rows[i].cells[n].lastChild.data;
+					 if (tmp == today.getDate())
+						{pageMap.rows[i].cells[n].style.backgroundColor = "#FFFF00"}
+					}
+				}
+			}
+	}
+
+	function insertRow(){
+
+		var isTable = document.getElementById('clickFields')
+		var index = isTable.rows.length;
+		var nextRow =  isTable.insertRow(index);
+		var isBox = nextRow.insertCell(0);
+		var isDesc = nextRow.insertCell(1);
+		var idStr = "fieldBox"+index;
+		isBox.innerHTML = "<input type='checkbox' id="+idStr+">";
+		isBox.style.width = "20px";
+		isDesc.innerHTML = clickField[index-1][1];
+	}
+
+	function buildClickFields(){
+
+		if (clickField.length == 0)
+			{
+			 document.getElementById('clickNotice').style.display = "none";
+			 document.getElementById('clickFields').style.display = "none";
+			}
+		else 	{
+			 for (r = 0; r <clickField.length; r++)
+				{insertRow()}
+			}
+	}
+
+	function buildSupport(){
+
+		var styleStr = "<style type='text/css'>.left {border-left:solid black 1px;border-right:solid black 1px;border-bottom:solid black 1px;text-align:center;width:27px}.other {border-right:solid black 1px;border-bottom:solid black 1px;text-align:center;width:27px}.btn {font-size:6pt;font-weight:bold;width:22px}.day {border-right:solid black 1px;border-bottom:solid black 1px;text-align:center;width:27px;font-family:arial;font-size:10pt;font-weight:bold}.leftDay {border-left:solid black 1px;border-right:solid black 1px;border-bottom:solid black 1px;text-align:center;width:27px;font-family:arial;font-size:10pt;font-weight:bold}<\/style>"
+		var tableStr = "<DIV id=nCalendar style='POSITION: absolute; TOP: 0px'><TABLE id=holder style='MARGIN: 10px; BACKGROUND-COLOR: #ffffe0' cellSpacing=0 cellPadding=0 align=center><TBODY><TR><TD><TABLE id=monthPage style='FONT-SIZE: 14pt' cellSpacing=0 cellPadding=3 width=189 border=0><TBODY><TR><TH id=header style='BORDER-RIGHT: black 1px solid; BORDER-TOP: black 1px solid; BORDER-LEFT: black 1px solid; BORDER-BOTTOM: black 1px solid; FONT-FAMILY: times; BACKGROUND-COLOR: #ffe4b5' colSpan=7>&nbsp;<\/TH><\/TR><TR style='BACKGROUND-COLOR: #f0e68c'><TD class=leftDay>S<\/TD><TD class=day>M<\/TD><TD class=day>T<\/TD><TD class=day>W<\/TD><TD class=day>T<\/TD><TD class=day>F<\/TD><TD class=day>S<\/TD><\/TR><TR><TD class=left>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><\/TR><TR><TD class=left>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><\/TR><TR><TD class=left>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><\/TR><TR><TD class=left>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><\/TR><TR><TD class=left>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><\/TR><TR id=lastRow style='DISPLAY: none'><TD class=left>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><TD class=other>&nbsp;<\/TD><\/TR><TR><TD style='BORDER-RIGHT: black 1px solid; FONT-WEIGHT: bold; FONT-SIZE: 12pt; PADDING-BOTTOM: 5px; BORDER-LEFT: black 1px solid; PADDING-TOP: 5px; BORDER-BOTTOM: black 1px solid; BACKGROUND-COLOR: #87ceeb' align='center' colSpan=7><INPUT class=btn id=rwMonths onclick=rewindM() type=button value='<<'>&nbsp; <INPUT class=btn title=Previous onclick=prevM() type=button value='<'>&nbsp;Month&nbsp; <INPUT class=btn title=Next onclick=nextM() type=button value='>'>&nbsp; <INPUT class=btn id=fwMonths onclick=forwardM() type=button value='>>'> <\/TD><\/TR><TR><TD style='BORDER-RIGHT: black 1px solid; FONT-WEIGHT: bold; FONT-SIZE: 12pt; PADDING-BOTTOM: 5px; BORDER-LEFT: black 1px solid; PADDING-TOP: 5px; BORDER-BOTTOM: black 1px solid; BACKGROUND-COLOR: #87ceeb' align='center' colSpan=7><INPUT class=btn id=rwYears onclick=rewindY() type=button value='<<'>&nbsp; <INPUT class=btn title=Previous onclick=prevY() type=button value='<'><SPAN style='LETTER-SPACING: 1px'>&nbsp;&nbsp;Year<\/SPAN>&nbsp;&nbsp; <INPUT class=btn title=Next onclick=nextY() type=button value='>'>&nbsp; <INPUT class=btn id=fwYears onclick=forwardY() type=button value='>>'> <\/TD><\/TR><TR id=clickNotice><TH style='BORDER-RIGHT: black 1px solid; FONT-SIZE: 10pt; BORDER-LEFT: black 1px solid; FONT-FAMILY: arial; BACKGROUND-COLOR: #90ee90' colSpan=7>Click To Field: <\/TH><\/TR><\/TBODY><TABLE id=clickFields style='BORDER-RIGHT: black 1px solid; FONT-SIZE: 10pt; BORDER-LEFT: black 1px solid; WIDTH: 189px; BORDER-BOTTOM: black 1px solid; FONT-FAMILY: arial; BACKGROUND-COLOR: #7fffd4' cellSpacing=0 cellPadding=0><TBODY><TR><\/TR><\/TBODY><\/TABLE><\/TR><\/TBODY><\/TABLE><\/TD><\/TBODY><\/TABLE><\/DIV>"
+
+		document.write(styleStr);
+		document.write(tableStr);
+	}
+
+	function initCalendar(){
+
+		buildSupport();
+		document.getElementById('rwMonths').title = " -"+hopMonths+" ";
+		document.getElementById('fwMonths').title = " +"+hopMonths+" ";
+		document.getElementById('rwYears').title = " -"+hopYears+" ";
+		document.getElementById('fwYears').title = " +"+hopYears+" ";
+		today = new Date();
+		refDate = new Date(today.getFullYear(),today.getMonth()+defaultMonth,1)
+		createCalendar();
+		buildClickFields();
+		document.getElementById('nCalendar').style.left = leftStr;
+		stayHome();
+	}
+
+</script>
+<style type="text/css">
+
+	 body {background-color:#eae3c6;margin-top:60px}
+	 form {width:260px;height:1200px;margin:auto}
+	 fieldset {width:260px;background-color:#f0fff0;border:1px solid #87ceeb}
+	 legend {font-family:tahoma;font-size:10pt;font-weight:bold;color:#00008b;background-color:#87ceeb;padding-left:3px;padding-right:3px;margin-bottom:5px;letter-spacing:+1px}
+	 label {font-family:times;font-size:12pt;color:#00008b;padding:5px}
+	.dates {font-family:times;font-size:10pt;text-align:right}
+	
+</style>
+</head>
+<body>
+
+	<form method='post' action=''>
+		<fieldset>
+			<legend> Order Tracking </legend>
+			<label> Order Received <input type='text' size='9' name='contractDate' class='dates' readonly></label><br>
+			<label> Started Assembly <input type='text' size='9' name='startAssembly' class='dates' readonly></label><br>
+			<label> Finished Assembly <input type='text' size='9' name='endAssembly' class='dates' readonly></label><br>
+			<label> Order Shipped <input type='text' size='9' name='dateShipped' class='dates' readonly></label>
+		</fieldset>
+	</form>
+	<div style='margin-left:auto;margin-right:auto;text-align:center;font-size:8pt;padding:3px'>Click to Field Calendar, &copy; Copyright 2007, Michael J. Hill. Used with permission. <a href='http://www.javascript-demos.com'>www.javascript-demos.com</a></div>
+
+<!-- Keep the following line as the LAST line in the Body -->
+<script type="text/javascript"> initCalendar() </script>
+</body>
+</html>
